@@ -84,7 +84,7 @@ void TestMediator() {
 }
 
 int main() {
-    //TestProxy();
-    //TestObloggable();
+    TestProxy();
+    TestObloggable();
     TestMediator();
 }
