@@ -28,9 +28,9 @@ class T6 {
 class T7 {
 };
 
-template <typename TStream, typename... TTypes>
-void PrintTypeList(TStream& stream, TTypeList<TTypes...>) {
-    (std::cout << ... << (std::string(typeid(TTypes).name()) + " ")) << "\n";
+template <typename... TTypes>
+void PrintTypeList(TTypeList<TTypes...>) {
+    (std::cout << ... << (std::string(typeid(TTypes).name()) + " ")) << std::endl;
 }
 
 int main() {
@@ -87,7 +87,7 @@ int main() {
     static_assert(!THas<TRemove<TList3, T1>, T1>::value, "");
     static_assert(TIndexOf<TRemove<TList3, T1>, T2>::value == 1, "");
 
-    PrintTypeList(std::cout, TRemove<TList7, T3>{});
+    PrintTypeList(TRemove<TList7, T3>{});
 
     return 0;
 }
