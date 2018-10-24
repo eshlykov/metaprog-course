@@ -196,7 +196,7 @@ using TRemove = typename TRemoveHolder<TList, TType>::TValue;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename...>
+template <typename, typename...>
 class TMergeHolder;
 
 template <typename TList>
