@@ -30,7 +30,7 @@ class T7 {
 
 template <typename... TTypes>
 void PrintTypeList(TTypeList<TTypes...>) {
-    (std::cout << ... << (std::string(typeid(TTypes).name()) + " ")) << std::endl;
+    (std::cout << ... << std::string(typeid(TTypes).name()) + " ") << std::endl;
 }
 
 int main() {
@@ -75,9 +75,9 @@ int main() {
     static_assert(TIndexOf<TPushBack<TList1, T3>, T3>::value == 1, "");
     static_assert(TIndexOf<TPushBack<TList2, T3>, T3>::value == 2, "");
 
-    static_assert(TIndexOf<TReversed<TList3>, T0>::value == 2, "");
-    static_assert(TIndexOf<TReversed<TList3>, T1>::value == 1, "");
-    static_assert(TIndexOf<TReversed<TList3>, T2>::value == 0, "");
+    static_assert(TIndexOf<TReverse<TList3>, T0>::value == 2, "");
+    static_assert(TIndexOf<TReverse<TList3>, T1>::value == 1, "");
+    static_assert(TIndexOf<TReverse<TList3>, T2>::value == 0, "");
 
     static_assert(!THas<TPopBack<TList1>, T0>::value, "");
     static_assert(!THas<TPopBack<TList2>, T1>::value, "");
@@ -88,6 +88,25 @@ int main() {
     static_assert(TIndexOf<TRemove<TList3, T1>, T2>::value == 1, "");
 
     PrintTypeList(TRemove<TList7, T3>{});
+
+    PrintTypeList(TPrefix<TList7, 4>{});
+    PrintTypeList(TSuffix<TList7, 4>{});
+    PrintTypeList(TSlice<TList7, 2, 3>{});
+    PrintTypeList(TMerge<TList7, TList3, TList2>{});
+    PrintTypeList(TInsertAfter<TList7, T7, 2>{});
+    PrintTypeList(TInsertBefore<TList7, T7, 2>{});
+    PrintTypeList(TReplace<TList7, T7, 2>{});
+    PrintTypeList(TSwap<TList7, 4, 2>{});
+    PrintTypeList(TSubList<TList7, 1, 4, 5>{});
+    PrintTypeList(TRotateHead<TList7, 3>{});
+    PrintTypeList(TRotateTail<TList7, 3>{});
+    PrintTypeList(TSpliceAfter<TList7, TList5, 3>{});
+    PrintTypeList(TSpliceBefore<TList7, TList5, 3>{});
+    PrintTypeList(TTypeList<THead<TList5>>{});
+    PrintTypeList(TTypeList<TTail<TList5>>{});
+
+    static_assert(TIsEmpty<TList0>::value, "");
+    static_assert(!TIsEmpty<TList1>::value, "");
 
     return 0;
 }
