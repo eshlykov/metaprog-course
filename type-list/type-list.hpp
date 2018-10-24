@@ -27,8 +27,18 @@ public:
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename, int>
-class TAtHolder;
+template <typename TList>
+using TLength = std::integral_constant<int, TList::Length>;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+template <typename TList, int index>
+class TAtHolder {
+public:
+    static_assert(index > 0 && index < TList::Length, "Index out of range.");
+
+    using TValue = typename TAtHolder<typename TList::TTail, index - 1>::TValue;
+};
 
 template <typename TList>
 class TAtHolder<TList, 0> {
@@ -38,30 +48,11 @@ public:
     using TValue = typename TList::THead;
 };
 
-template <typename TList, int index>
-class TAtHolder {
-public:
-    static_assert(index >= 0 && index < TList::Length, "Index out of range.");
-
-    using TValue = std::conditional_t<
-        index == 0,
-        typename TList::THead,
-        typename TAtHolder<typename TList::TTail, index - 1>::TValue>;
-};
 
 template <typename TList, int index>
 using TAt = typename TAtHolder<TList, index>::TValue;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-template <typename, typename>
-class THasHolder;
-
-template <typename TType>
-class THasHolder<TTypeList<>, TType> {
-public:
-    using TValue = std::false_type;
-};
 
 template <typename TList, typename TType>
 class THasHolder {
@@ -69,6 +60,12 @@ public:
     using TValue = std::disjunction<
         std::is_same<typename TList::THead, TType>,
         typename THasHolder<typename TList::TTail, TType>::TValue>;
+};
+
+template <typename TType>
+class THasHolder<TTypeList<>, TType> {
+public:
+    using TValue = std::false_type;
 };
 
 template <typename TList, typename TType>
@@ -225,15 +222,6 @@ using TMerge = typename TMergeHolder<TList, typename TMergeHolder<TLists...>::TV
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename, int>
-class TPrefixHolder;
-
-template <typename TList>
-class TPrefixHolder<TList, 0> {
-public:
-    using TValue = TTypeList<>;
-};
-
 template <typename TList, int length>
 class TPrefixHolder {
 public:
@@ -242,6 +230,12 @@ public:
     using TValue = TPushFront<
         typename TPrefixHolder<typename TList::TTail, length - 1>::TValue,
         typename TList::THead>;
+};
+
+template <typename TList>
+class TPrefixHolder<TList, 0> {
+public:
+    using TValue = TTypeList<>;
 };
 
 template <typename TList, int length>
@@ -311,20 +305,17 @@ using TSubList = TTypeList<TAt<TList, indices>...>;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <typename TList, int iters>
-class TRotateHeadHolder;
-
-template <typename TList>
-class TRotateHeadHolder<TList, 0> {
-public:
-    using TValue = TList;
-};
-
-template <typename TList, int iters>
 class TRotateHeadHolder {
 public:
     using TValue = typename TRotateHeadHolder<
         TPushBack<typename TList::TTail, typename TList::THead>,
         iters - 1>::TValue;
+};
+
+template <typename TList>
+class TRotateHeadHolder<TList, 0> {
+public:
+    using TValue = TList;
 };
 
 template <typename TList, int iters>

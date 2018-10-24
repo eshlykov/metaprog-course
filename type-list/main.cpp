@@ -49,6 +49,11 @@ int main() {
     static_assert(TList2::Length == 2, "");
     static_assert(TTypeList<TTypeList<>>::Length == 1, "");
 
+    static_assert(TLength<TList0>::value == 0, "");
+    static_assert(TLength<TList1>::value == 1, "");
+    static_assert(TLength<TList2>::value == 2, "");
+    static_assert(TLength<TTypeList<TTypeList<>>>::value == 1, "");
+
     static_assert(std::is_same_v<TAt<TList3, 0>, T0>, "");
     static_assert(std::is_same_v<TAt<TList3, 1>, T1>, "");
     static_assert(std::is_same_v<TAt<TList3, 2>, T2>, "");
