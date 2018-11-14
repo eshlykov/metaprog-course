@@ -1,4 +1,5 @@
 #include "../type-list/type-list.hpp"
+#include "../hierarchy/linear-hierarchy.hpp"
 #include "allocator.hpp"
 #include "abstract-factory.hpp"
 #include <cstdlib>
@@ -59,20 +60,26 @@ public:
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+template <typename TUnit, typename TBase>
+class TFactorUnit : public TBase {
+public:
+    virtual ~TFactorUnit() = default;
+
+    virtual void DoCreateUnit(TUnit*) override {
+    }
+};
+
 template <template <typename> typename TAllocator>
-class TEnemyFactory : public IAbstractFactory<TTypeList<TInfantry, TArcher, TCavalry>, TAllocator<TEnemy>> {
+class IEnemyFactory : public IAbstractFactory<TTypeList<TInfantry, TArcher, TCavalry>, TAllocator<TEnemy>> {
+public:
+    virtual ~IEnemyFactory() = default;
+};
+
+template <template <typename> typename TAllocator>
+class TEnemyFactory : public TLinearHierarchy<TFactorUnit, TTypeList<TInfantry, TArcher, TCavalry>, IEnemyFactory<TAllocator>> {
 public:
     virtual ~TEnemyFactory() = default;
-
-private:
-    virtual void DoCreateUnit(TInfantry*) override {
-    }
-
-    virtual void DoCreateUnit(TArcher*) override {
-    }
-
-    virtual void DoCreateUnit(TCavalry*) override {
-    }
 };
 
 int main() {
