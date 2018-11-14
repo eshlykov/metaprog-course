@@ -5,41 +5,36 @@
 #include "type-holder.hpp"
 #include <memory>
 
-template <typename TUnit, typename TAllocator>
+template <typename TUnit>
 class IAbstractFactoryUnit {
-    static_assert(std::is_base_of_v<typename TAllocator::TType, TUnit>, "Allocator does not support type used");
 public:
     virtual ~IAbstractFactoryUnit() = default;
 
-    std::unique_ptr<TUnit> CreateUnit(TTypeHolder<TUnit>) {
-        auto* unit = static_cast<TUnit*>(allocator.Allocate());
-        DoCreateUnit(unit);
-        return std::unique_ptr<TUnit>{unit};
-    };
+    template <typename T>
+    std::unique_ptr<T> CreateUnit() {
+        return DoCreateUnit(TTypeHolder<T>{});
+    }
 
 private:
-    virtual void DoCreateUnit(TUnit*) = 0;
-
-private:
-    TAllocator allocator = {};
+    virtual std::unique_ptr<TUnit> DoCreateUnit(TTypeHolder<TUnit>) = 0;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename TList, typename TAllocator>
-class IAbstractFactory : public TScatteredHierarchy<TMetacurrying<IAbstractFactoryUnit, TAllocator>::template TCurriedType, TList> {
+template <typename TList>
+class IAbstractFactory : public TScatteredHierarchy<IAbstractFactoryUnit, TList> {
 public:
     virtual ~IAbstractFactory() = default;
 
     template <typename TUnit>
     std::unique_ptr<TUnit> CreateUnit() {
-        return GetAbstractFactoryUnit<TUnit>().CreateUnit(TTypeHolder<TUnit>{});
+        return GetAbstractFactoryUnit<TUnit>().template CreateUnit<TUnit>();
     }
 
 private:
     template <typename TUnit>
-    IAbstractFactoryUnit<TUnit, TAllocator>& GetAbstractFactoryUnit() {
+    IAbstractFactoryUnit<TUnit>& GetAbstractFactoryUnit() {
         static_assert(THas<TList, TUnit>::value, "Type is not supported");
-        return static_cast<IAbstractFactoryUnit<TUnit, TAllocator>&>(*this);
+        return static_cast<IAbstractFactoryUnit<TUnit>&>(*this);
     }
 };
