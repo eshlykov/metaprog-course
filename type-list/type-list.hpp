@@ -163,6 +163,7 @@ using TReverse = typename TReverseHolder<TList>::TValue;
 
 template <typename TList>
 using TPopBack = TReverse<TPopFront<TReverse<TList>>>;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <typename TList>
@@ -335,3 +336,64 @@ using TSpliceAfter = TMerge<TPrefix<TList1, index>, TList2, TSuffix<TList1, TLis
 
 template <typename TList1, typename TList2, int index>
 using TSpliceBefore = TMerge<TPrefix<TList1, index - 1>, TList2, TSuffix<TList1, TList1::Length - index + 1>>;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+template <typename TList, template <typename, typename> typename TMetafunction, typename TAccumulator>
+class TReduceHolder {
+public:
+    using TValue = typename TReduceHolder<
+        typename TList::TTail,
+        TMetafunction,
+        TMetafunction<THead<TList>, TAccumulator>>::TValue;
+};
+
+template <template <typename, typename> typename TMetafunction, typename TAccumulator>
+class TReduceHolder<TTypeList<>, TMetafunction, TAccumulator> {
+public:
+    using TValue = TAccumulator;
+};
+
+template <typename TList, template <typename, typename> typename TMetafunction, typename TDefault>
+using TReduce = typename TReduceHolder<TList, TMetafunction, TDefault>::TValue;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+template <typename TList, template <typename> typename TMetafunction>
+class TMapHolder;
+
+template <template <typename> typename TMetafunction, typename... TTypes>
+class TMapHolder<TTypeList<TTypes...>, TMetafunction> {
+public:
+    using TValue = TTypeList<TMetafunction<TTypes>...>;
+};
+
+template <typename TList, template <typename> typename TMetafunction>
+using TMap = typename TMapHolder<TList, TMetafunction>::TValue;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+template <typename TList, template <typename, typename> typename TGroupCondition>
+class TGroupByHolder {
+private:
+    template <typename TElement, typename TAccumulator>
+    using TUnite = std::conditional_t<
+        TGroupCondition<TElement, TAccumulator>::value,
+        TReplace<
+            TAccumulator,
+            TPushBack<TTail<TAccumulator>, TElement>,
+            TLength<TAccumulator>::value - 1>,
+        TPushBack<TAccumulator, TTypeList<TElement>>>;
+
+public:
+    using TValue = TReduce<typename TList::TTail, TUnite, TTypeList<TTypeList<THead<TList>>>>;
+};
+
+template <template <typename, typename> typename TGroupCondition>
+class TGroupByHolder<TTypeList<>, TGroupCondition> {
+public:
+    using TValue = TTypeList<>;
+};
+
+template <typename TList, template <typename, typename> typename TGroupCondition>
+using TGroupBy = typename TGroupByHolder<TList, TGroupCondition>::TValue;
