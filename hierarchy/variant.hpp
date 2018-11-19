@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../type-list/type-list.hpp"
-#include "scatter-hierarchy.hpp"
+#include "scattered-hierarchy.hpp"
 #include <stdexcept>
 #include <utility>
 
