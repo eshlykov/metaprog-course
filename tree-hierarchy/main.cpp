@@ -69,7 +69,7 @@ using TFibonacciTreeHierarchy = TTreeHierarchy<TList, TBranchHead, TBranchNode, 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <typename T>
-class IHeadWelcomer {
+class IHeadWelcomer : public T {
 public:
     std::string GetWelcome() {
         return "Welcome from dummy head" + T::GetWelcome();
