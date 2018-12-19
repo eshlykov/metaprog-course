@@ -15,7 +15,7 @@ using TImprovedReader = TReader<
 using TBestReader = TReader<
     TTypeList<int, double, int>,
     TTypeList<TDecompressor<std::string, int>, TNone, TDecompressor<char, int>>,
-    TValueList<nullptr, Decompress<double, double>, Decompress<int, int>>
+    TValueList<nullptr, Decompress<std::string, double>, Decompress<int, int>>
 >;
 
 template <typename TReader>

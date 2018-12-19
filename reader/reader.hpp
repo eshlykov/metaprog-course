@@ -94,7 +94,7 @@ private:
                 file >> value;
                 return TAt<TList3, index>{value}.Decompress();
             } else {
-                TType value;
+                std::string value;
                 file >> value;
                 return At<TList3, index>()(value);
             }
